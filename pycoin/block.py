@@ -56,13 +56,21 @@ class BlockHeader(object):
     Tx = Tx
 
     @classmethod
-    def parse(cls, f):
+    def parse_header(cls, f):
         """Parse the BlockHeader from the file-like object in the standard way
         that blocks are sent in the network (well, except we ignore the
         transaction information)."""
         (version, previous_block_hash, merkle_root,
             timestamp, difficulty, nonce) = struct.unpack("<L32s32sLLL", f.read(4+32+32+4*3))
         return cls(version, previous_block_hash, merkle_root, timestamp, difficulty, nonce)
+
+    @classmethod
+    def parse(cls, f):
+        """Parse the BlockHeader from the file-like object in the standard way
+        that blocks are sent in the network (well, except we ignore the
+        transaction information).
+        The Block subclass also includes the transactions."""
+        return cls.parse_header(f)
 
     def __init__(self, version, previous_block_hash, merkle_root, timestamp, difficulty, nonce):
         self.version = version
